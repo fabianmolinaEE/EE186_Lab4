@@ -1,0 +1,39 @@
+!SESSION 2025-11-04 11:27:15.944 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-11-04 11:27:49.538
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-11-04 11:27:49.540
+!MESSAGE Log4j2 initialized with config file C:\Users\fabian\EE186\EE186_Lab4\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-11-04 11:27:54.360
+!MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2025-11-04 11:36:15.441 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-11-04 11:36:28.131
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-11-04 11:36:28.132
+!MESSAGE Log4j2 initialized with config file C:\Users\fabian\EE186\EE186_Lab4\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-11-04 11:36:32.512
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-11-04 11:37:56.039
+!MESSAGE Indexed 'lab4' (21 sources, 81 headers) in 4.4 sec: 5,087 declarations; 26,985 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0062%)
+
+!ENTRY com.st.stm32cube.ide.mcu.debug.launch 2 0 2025-11-04 12:43:07.487
+!MESSAGE Won't launch debug session since we failed to locate the binary.
+
+!ENTRY com.st.stm32cube.ide.mcu.debug.launch 2 0 2025-11-04 12:45:51.846
+!MESSAGE Won't launch debug session since we failed to locate the binary.
