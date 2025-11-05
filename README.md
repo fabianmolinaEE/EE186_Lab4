@@ -56,4 +56,6 @@ Source code: [theremin.c](part-4-musical-instrument/theremin.c)
 
 Video demo: 
 
-<video controls src="part-4-musical-instrument/IMG_1452.MOV" title="Theremin Demo"></video>
+In case that the video demo isn't loading (sometimes it is inconsistent on my end), please refer to the .MOV file in [the part-4-musical-instrument folder](part-4-musical-instrument)
+
+<video controls src="part-4-musical-instrument/IMG_1452.MOV" title="Demo"></video>
