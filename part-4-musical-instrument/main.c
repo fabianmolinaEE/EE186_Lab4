@@ -1,0 +1,269 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "adc.h"
+#include "dac.h"
+#include "dma.h"
+#include "usart.h"
+#include "tim.h"
+#include "gpio.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+// Configuration
+#define SINE_SAMPLES 32          // Number of samples in lookup table
+#define TARGET_FREQ 262          // Middle C frequency in Hz
+#define LOW_NOTE 200              // Minimum ADC value
+#define HIGH_NOTE 1000 
+// Pre-calculated 32-sample sine wave lookup table (12-bit, 0-4095 range). Looked these values up.
+const uint16_t sineTable[SINE_SAMPLES] = {
+    2048, 2447, 2831, 3185, 3495, 3750, 3939, 4056,
+    4095, 4056, 3939, 3750, 3495, 3185, 2831, 2447,
+    2048, 1648, 1264,  910,  600,  345,  156,   39,
+       0,   39,  156,  345,  600,  910, 1264, 1648
+};
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+
+/* USER CODE BEGIN PV */
+
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+/* USER CODE BEGIN PFP */
+void start_sine_wave(void);
+void change_note(uint16_t frequency);
+uint16_t read_ADC(void);
+uint16_t adc_to_frequency(uint16_t adc_value);
+
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+
+  /* USER CODE BEGIN 1 */
+  printf("Reading DAC and ADC Value...\r\n");
+  uint32_t desired_voltage = 0;
+
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+
+  /* USER CODE BEGIN Init */
+  uint32_t dac_val;
+  float dac_voltage, adc_voltage;
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_LPUART1_UART_Init();
+  MX_ADC1_Init();
+  MX_DAC1_Init();
+  MX_TIM6_Init();
+  /* USER CODE BEGIN 2 */
+    start_sine_wave();
+    uint32_t adc_value;
+    uint16_t frequency;
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+      // Read light intensity from photodiode via ADC
+      adc_value = read_ADC();
+      // Map ADC reading to frequency (adjust range as needed)
+      frequency = adc_to_frequency(adc_value);
+      // Update the sine wave frequency to effectively change the note played
+      change_note(frequency);
+      
+    
+      HAL_Delay(50);
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
+
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Configure the main internal regulator output voltage
+  */
+  if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.MSIState = RCC_MSI_ON;
+  RCC_OscInitStruct.MSICalibrationValue = 0;
+  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/* USER CODE BEGIN 4 */
+//Neded for printf to work over UART
+int __io_putchar(int ch)
+{
+    HAL_UART_Transmit(&hlpuart1, (uint8_t *)&ch, 1, 10);
+    return ch;
+}
+
+void start_sine_wave(void)
+{
+    // Start DAC in DMA mode
+    HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)sineTable, SINE_SAMPLES, DAC_ALIGN_12B_R);
+
+    // Start TIM6 which HAL already configured to trigger DAC
+    HAL_TIM_Base_Start(&htim6);
+}
+void stop_sine_wave(void)
+{
+    // Stop DAC DMA
+    HAL_DAC_Stop_DMA(&hdac1, DAC_CHANNEL_1);
+
+    // Stop TIM6
+    HAL_TIM_Base_Stop(&htim6);
+}
+
+void change_note(uint16_t frequency){
+    uint32_t timer_freq = frequency * SINE_SAMPLES;
+    uint32_t sys_clock = HAL_RCC_GetSysClockFreq();
+    uint32_t period = (sys_clock / timer_freq) - 1;
+    
+    // Stop timer
+    HAL_TIM_Base_Stop(&htim6);
+    
+    // Update period (AutoReload Register)
+    __HAL_TIM_SET_AUTORELOAD(&htim6, period);
+    
+    // Restart timer
+    HAL_TIM_Base_Start(&htim6);
+}
+
+uint16_t read_ADC(void){
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+    uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
+    return adc_value;
+}
+
+uint16_t adc_to_frequency(uint16_t adc_value){
+    // Map ADC value (0-4095) to frequency range (LOW_NOTE to HIGH_NOTE)
+    return (LOW_NOTE + ((adc_value / 4095.0f) * ( HIGH_NOTE - LOW_NOTE)));
+}
+/* USER CODE END 4 */
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1)
+  {
+  }
+  /* USER CODE END Error_Handler_Debug */
+}
+#ifdef USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */

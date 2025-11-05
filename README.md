@@ -27,3 +27,23 @@ Source Code: [photoresistor_read.c](part-2-ADC/photoresistor_read.c)
 <video controls src="part-2-ADC/IMG_1424.mov" title="Title"></video>
 
 ## Part 3: DAC 
+
+### If B = 9, what is Vout? Express your answer in terms of Vref . Use the DAC mode that provides the best resolution available on your MCU (refer to the data sheet).
+
+If B = 9 and we are using the 12 bit DAC mode (the best resolution), then we can use n = 12 and Vout = (B/2^n)  * Vref to solve for it. 
+Using this formula we get Vout = (9/2^12) Vref 
+or Vout = 0.002197Vref.
+
+### Screenshot of DAC, ADC, and differences
+![DAC to ADC and their Difference](part-3-DAC/DAC_ADC_dif.png)
+
+### How does the sampling rate of the DAC affect the quality of the output waveform? What are the differences in sound perception between sine, square, and sawtooth waves? Why do we need a capacitor in the signal path when sending an audio signal to a speaker or earphones?
+
+1. The sampling rate determines how accurately we can reproduce the waveform. If we have a higher sampling rate we see a smoother, more accurate waveform. If we take fewer samples per cycle then we might see a distorted waveform. 
+
+2. A sine wave is smoother and only plays one frequency. The square waves sound harsh with a weird buzzing. The sawtooth waves sound rich and very complex like it has more harmonics. 
+
+3. We need the capacitor to act as a DC blocker. Sometimes the signals we generate to the audio might have dc components which can distort the audio and damage the circuitry over time as a result of high voltage. The capacitor blocks the dc voltages and instead passes an AC signal only that is centered arond 0 and less in magnitude. The capacitor acts as a low pass filter. 
+
+## Part 4: Musical Instrument
+

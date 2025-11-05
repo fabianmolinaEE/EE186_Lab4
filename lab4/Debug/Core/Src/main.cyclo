@@ -1,5 +1,7 @@
-../Core/Src/main.c:67:5:main	1
-../Core/Src/main.c:115:6:SystemClock_Config	4
-../Core/Src/main.c:157:5:__io_putchar	1
-../Core/Src/main.c:163:6:readVals	3
-../Core/Src/main.c:188:6:Error_Handler	1
+../Core/Src/main.c:94:5:main	1
+../Core/Src/main.c:143:6:SystemClock_Config	4
+../Core/Src/main.c:185:5:__io_putchar	1
+../Core/Src/main.c:191:6:start_sine_wave	1
+../Core/Src/main.c:199:6:stop_sine_wave	1
+../Core/Src/main.c:207:6:read_adc_and_print	1
+../Core/Src/main.c:223:6:Error_Handler	1
