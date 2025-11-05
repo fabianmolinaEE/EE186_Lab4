@@ -45,5 +45,15 @@ or Vout = 0.002197Vref.
 
 3. We need the capacitor to act as a DC blocker. Sometimes the signals we generate to the audio might have dc components which can distort the audio and damage the circuitry over time as a result of high voltage. The capacitor blocks the dc voltages and instead passes an AC signal only that is centered arond 0 and less in magnitude. The capacitor acts as a low pass filter. 
 
+### Screenshot of sine wave
+Source Code: [sinewave.c](part-3-DAC/sinewave.c)
+
+![Sine wave generating middle C frequency](part-3-DAC/Sine_wave_C.jpeg)
+
 ## Part 4: Musical Instrument
 
+Source code: [theremin.c](part-4-musical-instrument/theremin.c)
+
+Video demo: 
+
+<video controls src="part-4-musical-instrument/IMG_1452.MOV" title="Theremin Demo"></video>

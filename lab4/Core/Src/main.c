@@ -38,6 +38,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 // Configuration
+#define LOW_NOTE 200              // Minimum ADC value
+#define HIGH_NOTE 1000 
 #define SINE_SAMPLES 128         // Number of samples in lookup table
 #define TARGET_FREQ 262          // Middle C frequency in Hz
 
@@ -77,8 +79,10 @@ const uint16_t sineTable[SINE_SAMPLES] = {
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void start_sine_wave(void);
-void stop_sine_wave(void);
-void read_adc_and_print(void);
+void change_note(uint16_t frequency);
+uint16_t read_ADC(void);
+uint16_t adc_to_frequency(uint16_t adc_value);
+
 
 /* USER CODE END PFP */
 
@@ -95,6 +99,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+  printf("Reading DAC and ADC Value...\r\n");
+  uint32_t desired_voltage = 0;
 
   /* USER CODE END 1 */
 
@@ -104,7 +110,8 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  
+  uint32_t dac_val;
+  float dac_voltage, adc_voltage;
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -122,7 +129,9 @@ int main(void)
   MX_DAC1_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
-  start_sine_wave();
+    start_sine_wave();
+    uint32_t adc_value;
+    uint16_t frequency;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -130,7 +139,15 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+      // Read light intensity from photodiode via ADC
+      adc_value = read_ADC();
+      // Map ADC reading to frequency (adjust range as needed)
+      frequency = adc_to_frequency(adc_value);
+      // Update the sine wave frequency to effectively change the note played
+      change_note(frequency);
+      
+    
+      HAL_Delay(50);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -193,7 +210,7 @@ void start_sine_wave(void)
     // Start DAC in DMA mode
     HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)sineTable, SINE_SAMPLES, DAC_ALIGN_12B_R);
 
-    // TIM6 is already on and configured in MX_TIM6_Init(), just start it here
+    // Start TIM6 which HAL already configured to trigger DAC
     HAL_TIM_Base_Start(&htim6);
 }
 void stop_sine_wave(void)
@@ -204,15 +221,32 @@ void stop_sine_wave(void)
     // Stop TIM6
     HAL_TIM_Base_Stop(&htim6);
 }
-void read_adc_and_print(void)
-{
+
+void change_note(uint16_t frequency){
+    uint32_t timer_freq = frequency * SINE_SAMPLES;
+    uint32_t sys_clock = HAL_RCC_GetSysClockFreq();
+    uint32_t period = (sys_clock / timer_freq) - 1;
+    
+    // Stop timer
+    HAL_TIM_Base_Stop(&htim6);
+    
+    // Update period (AutoReload Register)
+    __HAL_TIM_SET_AUTORELOAD(&htim6, period);
+    
+    // Restart timer
+    HAL_TIM_Base_Start(&htim6);
+}
+
+uint16_t read_ADC(void){
     HAL_ADC_Start(&hadc1);
     HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
     uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
-    //convert to voltage
-    float voltage = (adc_value / 4095.0f) * 3.3f;
-    printf("ADC Value: %lu, Voltage: %.2f V\r\n", adc_value, voltage);
-   
+    return adc_value;
+}
+
+uint16_t adc_to_frequency(uint16_t adc_value){
+    // Map ADC value (0-4095) to frequency range (LOW_NOTE to HIGH_NOTE)
+    return (LOW_NOTE + ((adc_value / 4095.0f) * ( HIGH_NOTE - LOW_NOTE)));
 }
 /* USER CODE END 4 */
 

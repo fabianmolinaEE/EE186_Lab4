@@ -1,30 +1,41 @@
-10:39:38 **** Incremental Build of configuration Debug for project lab4 ****
+10:50:30 **** Incremental Build of configuration Debug for project lab4 ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L4R5xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc "../Core/Src/tim.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L4R5xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/tim.d" -MT"Core/Src/tim.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/tim.o"
-../Core/Src/main.c: In function 'read_adc_and_print':
-../Core/Src/main.c:214:5: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
-  214 |     printf("ADC Value: %lu, Voltage: %.2f V\r\n", adc_value, voltage);
-      |     ^~~~~~
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:102:3: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  102 |   printf("Reading DAC and ADC Value...\r\n");
+      |   ^~~~~~
 ../Core/Src/main.c:27:1: note: include '<stdio.h>' or provide a declaration of 'printf'
    26 | #include "gpio.h"
   +++ |+#include <stdio.h>
    27 | 
-../Core/Src/main.c:214:5: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
-  214 |     printf("ADC Value: %lu, Voltage: %.2f V\r\n", adc_value, voltage);
-      |     ^~~~~~
-../Core/Src/main.c:214:5: note: include '<stdio.h>' or provide a declaration of 'printf'
+../Core/Src/main.c:102:3: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  102 |   printf("Reading DAC and ADC Value...\r\n");
+      |   ^~~~~~
+../Core/Src/main.c:102:3: note: include '<stdio.h>' or provide a declaration of 'printf'
+../Core/Src/main.c:114:22: warning: unused variable 'adc_voltage' [-Wunused-variable]
+  114 |   float dac_voltage, adc_voltage;
+      |                      ^~~~~~~~~~~
+../Core/Src/main.c:114:9: warning: unused variable 'dac_voltage' [-Wunused-variable]
+  114 |   float dac_voltage, adc_voltage;
+      |         ^~~~~~~~~~~
+../Core/Src/main.c:113:12: warning: unused variable 'dac_val' [-Wunused-variable]
+  113 |   uint32_t dac_val;
+      |            ^~~~~~~
+../Core/Src/main.c:103:12: warning: unused variable 'desired_voltage' [-Wunused-variable]
+  103 |   uint32_t desired_voltage = 0;
+      |            ^~~~~~~~~~~~~~~
 arm-none-eabi-gcc -o "lab4.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\fabian\EE186\EE186_Lab4\lab4\STM32L4R5ZITXP_FLASH.ld" --specs=nosys.specs -Wl,-Map="lab4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: lab4.elf
  
 arm-none-eabi-size  lab4.elf 
 arm-none-eabi-objdump -h -S lab4.elf  > "lab4.list"
    text	   data	    bss	    dec	    hex	filename
-  38188	    468	   2348	  41004	   a02c	lab4.elf
+  39632	    468	   2348	  42448	   a5d0	lab4.elf
 Finished building: default.size.stdout
  
 Finished building: lab4.list
  
 
-10:39:41 Build Finished. 0 errors, 2 warnings. (took 2s.222ms)
+10:50:31 Build Finished. 0 errors, 6 warnings. (took 1s.193ms)
 
